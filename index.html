@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kartu Identitas Digital Siswa</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 650px;
+            width: 100%;
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+        }
+
+        h2 {
+            text-align: center;
+            color: #1a365d;
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 22px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 15px;
+        }
+
+        /* --- AREA TAMPILAN KARTU --- */
+        .card-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .card-item {
+            width: 100%;
+            max-width: 500px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+
+        .card-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Status Pesan / Error */
+        #status-pesan {
+            color: #e53e3e;
+            font-weight: 500;
+            padding: 30px 10px;
+            text-align: center;
+            background: #fff5f5;
+            border-radius: 8px;
+            border: 1px dashed #feb2b2;
+        }
+
+        /* --- CATATAN --- */
+        .notes-section {
+            background-color: #f7fafc;
+            border-left: 4px solid #3182ce;
+            padding: 15px 20px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 20px;
+        }
+
+        .notes-section h3 {
+            margin-top: 0;
+            color: #2b6cb0;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .notes-list {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .notes-list li {
+            margin-bottom: 10px;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        .wa-link {
+            color: #25d366;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>KARTU IDENTITAS DIGITAL</h2>
+        
+        <div class="card-wrapper">
+            <div id="status-pesan" style="display: none;">
+                Data kartu siswa tidak ditemukan atau link salah.
+            </div>
+            
+            <div class="card-item img-box" style="display: none;">
+                <img id="kartu-pelajar" src="" alt="Kartu Pelajar">
+            </div>
+            <div class="card-item img-box" style="display: none;">
+                <img id="kartu-pustaka" src="" alt="Kartu Perpustakaan">
+            </div>
+        </div>
+
+        <div class="notes-section">
+            <h3>Catatan Penting:</h3>
+            <ol class="notes-list">
+                <li>Kartu ini bisa menjadi identitas digital selama menjadi siswa SMA Negeri 1 Sabang dengan cara <strong>screenshot halaman ini</strong> lalu disimpan ke Ponsel apabila terjadi kehilangan kartu fisik.</li>
+                <li>Apabila terjadi kesalahan data, silakan menghubungi admin perpustakaan SMA Negeri 1 Sabang atau Chat di WhatsApp: <a class="wa-link" href="https://wa.me/6285157421988" target="_blank">085157421988</a></li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        // DATA KARTU SISWA (Key di sini mencerminkan parameter di # URL)
+        const databaseSiswa = {
+            "albarokah": {
+                pelajar: "Albarokah.png",
+                pustaka: "Albarokah_pustaka.png"
+            },
+            "augy": {
+                pelajar: "Augy.png",
+                pustaka: "Augy_pustaka.png"
+            },
+            "fauzhan": {
+                pelajar: "Fauzhan.png",
+                pustaka: "Fauzhan_pustaka.png"
+            }
+        };
+
+        function muatKartuSiswa() {
+            // Ambil text setelah tanda pagar (#), ubah ke lowercase agar tidak sensitif huruf kapital
+            const idSiswa = window.location.hash.substring(1).toLowerCase();
+            
+            const elementPelajar = document.getElementById('kartu-pelajar');
+            const elementPustaka = document.getElementById('kartu-pustaka');
+            const statusPesan = document.getElementById('status-pesan');
+            const imgBoxes = document.querySelectorAll('.img-box');
+
+            // Cek apakah key siswa ada di database
+            if (idSiswa && databaseSiswa[idSiswa]) {
+                // Set Src Gambar
+                elementPelajar.src = databaseSiswa[idSiswa].pelajar;
+                elementPustaka.src = databaseSiswa[idSiswa].pustaka;
+
+                // Tampilkan gambar & sembunyikan pesan error
+                statusPesan.style.display = 'none';
+                imgBoxes.forEach(box => box.style.display = 'block');
+            } else {
+                // Jika hash kosong atau data siswa tidak terdaftar
+                statusPesan.style.display = 'block';
+                imgBoxes.forEach(box => box.style.display = 'none');
+                if(!idSiswa) {
+                    statusPesan.innerText = "Silakan masukkan ID siswa pada URL. Contoh: namafile.html#albarokah";
+                } else {
+                    statusPesan.innerText = `Data siswa dengan ID "${idSiswa}" tidak ditemukan.`;
+                }
+            }
+        }
+
+        // Eksekusi otomatis saat halaman dibuka atau saat hash URL berganti
+        window.addEventListener('hashchange', muatKartuSiswa);
+        window.addEventListener('load', muatKartuSiswa);
+    </script>
+
+</body>
+</html>
