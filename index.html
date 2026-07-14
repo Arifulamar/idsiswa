@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kartu Identitas Digital Siswa</title>
+    <!-- Menambahkan Pustaka Canvas Confetti dari CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -102,9 +104,123 @@
             text-decoration: none;
             font-weight: bold;
         }
+
+        /* --- CSS UNTUK OVERLAY SAMBUTAN DIPERBARUI --- */
+        #welcome-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85); /* Overlay sedikit lebih gelap */
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+            transition: opacity 1s ease-out; /* Transisi fade-out */
+        }
+
+        #welcome-content {
+            background-color: rgba(26, 54, 93, 0.9); /* Warna latar belakang kontainer, biru tua */
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            max-width: 80%;
+            width: 500px;
+            animation: fadeInWelcome 1s ease-in-out; /* Animasi masuk */
+        }
+
+        /* Menambahkan Animasi Masuk untuk Konten */
+        @keyframes fadeInWelcome {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        #welcome-logo {
+            max-width: 150px;
+            height: auto;
+            margin-bottom: 25px;
+            filter: drop-shadow(0 4px 8px rgba(255, 255, 255, 0.3)); /* Menambahkan efek shadow pada logo */
+        }
+
+        .welcome-heading {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            font-weight: 800;
+            color: #f6ad55; /* Warna aksen emas/oranye */
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .welcome-description {
+            font-size: 1.5em;
+            margin-bottom: 25px;
+            line-height: 1.4;
+            color: #e2e8f0; /* Putih keabu-abuan */
+        }
+
+        .welcome-sub-description {
+            font-size: 1em;
+            margin-bottom: 35px;
+            color: #cbd5e0; /* Putih keabu-abuan lebih muda */
+            font-style: italic;
+        }
+
+        #welcome-close-button {
+            background-color: #f6ad55; /* Warna emas */
+            color: #1a365d; /* Warna biru tua untuk teks */
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.2em;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        #welcome-close-button:hover {
+            background-color: #ed8936; /* Warna oranye saat hover */
+        }
+
+        #welcome-close-button:active {
+            transform: scale(0.97); /* Sedikit mengecil saat diklik */
+        }
     </style>
 </head>
 <body>
+
+    <!-- Elemen Overlay Sambutan -->
+    <!-- Edit bagian ini -->
+    <div id="welcome-overlay">
+        <div id="welcome-content">
+            <!-- Menambahkan Logo di Atas -->
+            <img src="logosma.png" alt="Logo SMA Negeri 1 Sabang" id="welcome-logo">
+            
+            <div id="welcome-text-container">
+                <!-- Judul Utama -->
+                <h1 class="welcome-heading">Selamat Bergabung!</h1>
+                
+                <!-- Teks Deskriptif yang Diperluas -->
+                <p class="welcome-description">Di SMA Negeri 1 Sabang, <br> Sekolah Para Juara!</p>
+                
+                <!-- Menambahkan Sub-teks opsional -->
+                <p class="welcome-sub-description">Bersama, kita ukir prestasi dan masa depan gemilang.</p>
+            </div>
+
+            <!-- Menambahkan Tombol Tindakan -->
+            <button id="welcome-close-button">Lanjutkan ke Profil</button>
+        </div>
+    </div>
 
     <div class="container">
         <h2>KARTU IDENTITAS DIGITAL</h2>
@@ -850,9 +966,98 @@
             }
         }
 
-        // Eksekusi otomatis saat halaman dibuka atau saat hash URL berganti
+        // --- FUNGSI UNTUK MENAMPILKAN SAMBUTAN DAN CONFETTI ---
+        function tampilkanSambutan() {
+            const overlay = document.getElementById('welcome-overlay');
+            
+            // Tampilkan overlay
+            overlay.style.display = 'flex';
+            
+            // Jalankan animasi confetti
+            // Konfigurasi 1: Tembakan dari tengah bawah
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 1 }
+            });
+            
+            // Konfigurasi 2: Hujan confetti selama 3 detik
+            var duration = 3 * 1000;
+            var end = Date.now() + duration;
+
+            (function frame() {
+              // Tembakan acak dari kiri dan kanan
+              confetti({
+                particleCount: 2,
+                angle: 60,
+                spread: 55,
+                origin: { x: 0 },
+                colors: ['#bb0000', '#ffffff', '#1a365d'] // Contoh warna khusus
+              });
+              confetti({
+                particleCount: 2,
+                angle: 120,
+                spread: 55,
+                origin: { x: 1 },
+                colors: ['#bb0000', '#ffffff', '#1a365d'] // Contoh warna khusus
+              });
+
+              if (Date.now() < end) {
+                requestAnimationFrame(frame);
+              }
+            }());
+
+            // Mulai animasi fade-out setelah 2 detik (agar total 3 detik dengan durasi transisi)
+            setTimeout(() => {
+                overlay.style.opacity = '0';
+            }, 2000);
+
+            // Sembunyikan elemen overlay sepenuhnya setelah 3 detik (total waktu)
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 3000);
+        }
+
+        // --- FUNGSI UTAMA SAAT HALAMAN DIMUAT ---
+        window.addEventListener('load', () => {
+            // Jalankan fungsi pemuatan kartu siswa
+            muatKartuSiswa();
+
+            // Cek apakah user pertama kali membuka halaman di sesi ini
+            const isFirstTime = sessionStorage.getItem('isFirstTimeVisit');
+
+            if (!isFirstTime) {
+                // Jika pertama kali (di sesi ini), tampilkan sambutan
+                tampilkanSambutan();
+                // Set flag di sessionStorage agar sambutan tidak muncul lagi di refresh berikutnya
+                sessionStorage.setItem('isFirstTimeVisit', 'true');
+            }
+        });
+
+        // Eksekusi otomatis saat hash URL berganti
         window.addEventListener('hashchange', muatKartuSiswa);
-        window.addEventListener('load', muatKartuSiswa);
+
+        // --- JAVASCRIPT UNTUK MENUTUP OVERLAY MELALUI TOMBOL ---
+        function tutupSambutan() {
+            const overlay = document.getElementById('welcome-overlay');
+            overlay.style.opacity = '0'; // Mulai animasi fade-out
+            
+            // Sembunyikan elemen overlay sepenuhnya setelah animasi selesai
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 1000); // Waktu yang sama dengan durasi transisi di CSS
+        }
+
+        // --- Tambahkan pendengar acara ke tombol setelah halaman dimuat ---
+        window.addEventListener('load', () => {
+            // ... kode muat kartu siswa dan sessionStorage Anda yang ada ...
+
+            // Pastikan Anda mendapatkan elemen tombol
+            const closeButton = document.getElementById('welcome-close-button');
+            if (closeButton) {
+                closeButton.addEventListener('click', tutupSambutan);
+            }
+        });
     </script>
 
 </body>
